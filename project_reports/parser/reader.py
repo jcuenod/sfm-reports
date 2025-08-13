@@ -30,7 +30,7 @@ class USFMReader:
             bible_dict = {k: v for k, v in zip(biblenlp_format["vref"], biblenlp_format["text"])}  # type: ignore
             documents.append(Document(filepath, content, bible_dict))
 
-            if len(documents) >= 3:
-                print("Stopping after 3 documents for testing purposes.")
-                break
+            # if len(documents) >= 1:
+            #     print("Stopping after 1 document for testing purposes.")
+            #     break
         return documents

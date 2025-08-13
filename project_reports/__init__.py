@@ -32,10 +32,11 @@ def run_reports(path, html_filename=None):
     reader = USFMReader()
     documents = reader.read_directory(path)
     results = {}
-    for report in load_reports():
+    reports = load_reports()
+    for report in reports:
         results[report.name] = report.run(documents)
 
     if html_filename:
-        generate_html_report(results, html_filename, "USFM Text Analysis Report")
+        generate_html_report(reports, html_filename, "USFM Text Analysis Report")
 
     return results

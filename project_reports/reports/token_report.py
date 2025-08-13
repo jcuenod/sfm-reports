@@ -3,6 +3,8 @@ Report: Token lengths per verse using NLLB tokenizer
 """
 from collections import Counter
 from transformers import AutoTokenizer
+
+from project_reports.render.histogram import render_histogram
 from .base import BaseReport
 
 class TokenReport(BaseReport):
@@ -14,6 +16,31 @@ class TokenReport(BaseReport):
     def name(self):
         return "token_report"
 
+    def render(self):
+        """Render the token report section."""
+        if not self.data:
+            return ""
+        
+        html = "<section><h2>Token Analysis</h2>"
+        
+        # Basic stats
+        if 'max_tokens' in self.data:
+            html += f"""
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{self.data['max_tokens']}</div>
+                    <div class="stat-label">Maximum Tokens</div>
+                </div>
+            </div>
+            """
+        
+        # Histogram
+        if 'histogram' in self.data:
+            html += render_histogram(self.data['histogram'])
+        
+        html += "</section>"
+        return html
+
     def run(self, documents):
         token_counts = []
         for doc in documents:
@@ -24,4 +51,5 @@ class TokenReport(BaseReport):
             return {"max_tokens": 0, "histogram": {}}
         max_tokens = max(token_counts)
         histogram = Counter(token_counts)
-        return {"max_tokens": max_tokens, "histogram": dict(histogram)}
+        self.data = {"max_tokens": max_tokens, "histogram": dict(histogram)}
+        return self.data
