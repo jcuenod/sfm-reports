@@ -31,6 +31,10 @@ class TokenReport(BaseReport):
                     <div class="stat-value">{self.data['max_tokens']}</div>
                     <div class="stat-label">Maximum Tokens</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-value">{self.data.get('unk_tokens', 0)}</div>
+                    <div class="stat-label">Unknown Tokens</div>
+                </div>
             </div>
             """
         
@@ -43,13 +47,19 @@ class TokenReport(BaseReport):
 
     def run(self, documents):
         token_counts = []
+        unk_tokens = 0
         for doc in documents:
             for ref, text in doc.parsed.items():
                 tokens = self.tokenizer.tokenize(text)
                 token_counts.append(len(tokens))
+                unk_tokens += tokens.count(self.tokenizer.unk_token)
         if not token_counts:
             return {"max_tokens": 0, "histogram": {}}
         max_tokens = max(token_counts)
         histogram = Counter(token_counts)
-        self.data = {"max_tokens": max_tokens, "histogram": dict(histogram)}
+        self.data = {
+            "max_tokens": max_tokens,
+            "unk_tokens": unk_tokens,
+            "histogram": dict(histogram)
+        }
         return self.data
